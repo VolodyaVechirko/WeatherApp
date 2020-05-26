@@ -2,6 +2,7 @@
 Simple WeatherApp client
 
 master branch contains sample with coroutines usage
+
 rxjava-usage branch - sample with rxjava
 
 Application uses user location for loading weather forecast for current point (city). 
@@ -17,7 +18,7 @@ Presentation layer is built using ViewModel (arch comp) and data observing throu
 Koin is used as a dependency injection tool.
 
 What are not included:
-Unit tests
-Android data binding (xml)
-Android navigation (arch comp)
-DiffUtils for RecyclerView
+Unit tests,
+Android data binding (xml),
+Android navigation (arch comp),
+DiffUtils for RecyclerView.
