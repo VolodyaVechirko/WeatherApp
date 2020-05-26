@@ -4,40 +4,41 @@ import androidx.room.*
 import com.vvechirko.weatherapp.framework.local.entity.CityForecast
 import com.vvechirko.weatherapp.framework.local.entity.RoomCityEntity
 import com.vvechirko.weatherapp.framework.local.entity.RoomForecastEntity
+import io.reactivex.Single
 
 @Dao
 interface ForecastDao {
     @Query("SELECT * FROM Cities")
-    suspend fun queryCities(): List<RoomCityEntity>
+    fun queryCities(): Single<List<RoomCityEntity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertCity(city: RoomCityEntity)
+    fun insertCity(city: RoomCityEntity)
 
     @Update(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun updateCity(city: RoomCityEntity)
+    fun updateCity(city: RoomCityEntity)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertForecast(city: RoomForecastEntity)
+    fun insertForecast(city: RoomForecastEntity)
 
     @Update(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun updateForecast(city: RoomForecastEntity)
+    fun updateForecast(city: RoomForecastEntity)
 
     @Transaction
-    suspend fun insert(city: RoomCityEntity, forecast: RoomForecastEntity) {
+    fun insert(city: RoomCityEntity, forecast: RoomForecastEntity) {
         insertCity(city)
         insertForecast(forecast)
     }
 
     @Transaction
-    suspend fun update(city: RoomCityEntity, forecast: RoomForecastEntity) {
+    fun update(city: RoomCityEntity, forecast: RoomForecastEntity) {
         updateCity(city)
         updateForecast(forecast)
     }
 
     @Query("DELETE FROM Cities WHERE id = :cityId")
-    suspend fun deleteById(cityId: Int): Int
+    fun deleteById(cityId: Int): Int
 
     @Transaction
     @Query("SELECT * FROM Cities")
-    suspend fun queryForecasts(): List<CityForecast>
+    fun queryForecasts(): Single<List<CityForecast>>
 }

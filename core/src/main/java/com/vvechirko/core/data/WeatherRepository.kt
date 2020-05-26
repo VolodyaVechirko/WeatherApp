@@ -4,12 +4,14 @@ import com.vvechirko.core.domain.CityEntity
 import com.vvechirko.core.domain.CurrentWeather
 import com.vvechirko.core.domain.LocationPoint
 import com.vvechirko.core.domain.WeatherForecast
+import io.reactivex.Completable
+import io.reactivex.Single
 
 interface WeatherRepository {
-    suspend fun queryCities(): Result<List<CityEntity>>
-    suspend fun currentWeather(point: LocationPoint): Result<CurrentWeather>
-    suspend fun currentWeather(name: String): Result<CurrentWeather>
-    suspend fun currentWeather(group: List<CityEntity>): Result<List<CurrentWeather>>
-    suspend fun weatherForecast(cityId: Int): Result<WeatherForecast>
-    suspend fun removeCity(cityId: Int): Result<Unit>
+    fun queryCities(): Single<List<CityEntity>>
+    fun currentWeather(point: LocationPoint): Single<CurrentWeather>
+    fun currentWeather(name: String): Single<CurrentWeather>
+    fun currentWeather(group: List<CityEntity>): Single<List<CurrentWeather>>
+    fun weatherForecast(cityId: Int): Single<WeatherForecast>
+    fun removeCity(cityId: Int): Completable
 }

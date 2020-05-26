@@ -3,9 +3,11 @@ package com.vvechirko.weatherapp.framework.remote
 import com.vvechirko.core.data.RemoteDataSource
 import com.vvechirko.core.domain.CityEntity
 import com.vvechirko.core.domain.CurrentWeather
-import com.vvechirko.core.domain.WeatherForecast
 import com.vvechirko.core.domain.LocationPoint
+import com.vvechirko.core.domain.WeatherForecast
 import com.vvechirko.weatherapp.framework.remote.mapper.map
+import io.reactivex.Observable
+import io.reactivex.Single
 
 class RetrofitDataSourceImpl(
     private val weatherApi: WeatherApi
@@ -13,24 +15,25 @@ class RetrofitDataSourceImpl(
 
     private val apiKey = "cbb27ac645e4592c5a70f28532c2dac2"
 
-    override suspend fun currentWeather(point: LocationPoint): CurrentWeather {
+    override fun currentWeather(point: LocationPoint): Single<CurrentWeather> {
         val query = mapOf(
             "lat" to point.latitude.toString(),
             "lon" to point.longitude.toString(),
             "appid" to apiKey
         )
-        return weatherApi.fetchCity(query).map()
+        return weatherApi.fetchCity(query)
+            .map { it.map() }
     }
 
-    override suspend fun currentWeather(name: String): CurrentWeather {
+    override fun currentWeather(name: String): Single<CurrentWeather> {
         val query = mapOf(
             "q" to name,
             "appid" to apiKey
         )
-        return weatherApi.fetchCity(query).map()
+        return weatherApi.fetchCity(query).map { it.map() }
     }
 
-    override suspend fun currentWeather(group: List<CityEntity>): List<CurrentWeather> {
+    override fun currentWeather(group: List<CityEntity>): Single<List<CurrentWeather>> {
         val ids = group.joinToString(",") {
             it.id.toString()
         }
@@ -38,16 +41,18 @@ class RetrofitDataSourceImpl(
             "id" to ids,
             "appid" to apiKey
         )
-        return weatherApi.fetchCities(query).list.map {
-            it.map()
-        }
+        return weatherApi.fetchCities(query)
+            .flatMapObservable { Observable.fromIterable(it.list) }
+            .map { it.map() }
+            .toList()
     }
 
-    override suspend fun weatherForecast(cityId: Int): WeatherForecast {
+    override fun weatherForecast(cityId: Int): Single<WeatherForecast> {
         val query = mapOf(
             "id" to cityId.toString(),
             "appid" to apiKey
         )
-        return weatherApi.cityDetails(query).map()
+        return weatherApi.cityDetails(query)
+            .map { it.map() }
     }
 }

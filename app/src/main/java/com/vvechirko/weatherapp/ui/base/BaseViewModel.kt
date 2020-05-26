@@ -3,10 +3,9 @@ package com.vvechirko.weatherapp.ui.base
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
+import io.reactivex.disposables.CompositeDisposable
 
-open class BaseViewModel : ViewModel(), CoroutineScope {
+open class BaseViewModel : ViewModel() {
 
     protected val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
@@ -14,14 +13,11 @@ open class BaseViewModel : ViewModel(), CoroutineScope {
     private val _snackbarText = MutableLiveData<Event<Int>>()
     val snackbarText: LiveData<Event<Int>> = _snackbarText
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + SupervisorJob() + CoroutineExceptionHandler { _, t ->
-            t.printStackTrace()
-        }
+    protected val disposable = CompositeDisposable()
 
     override fun onCleared() {
         super.onCleared()
-        coroutineContext.cancel()
+        disposable.dispose()
     }
 
     protected fun showSnackbarMessage(message: Int) {

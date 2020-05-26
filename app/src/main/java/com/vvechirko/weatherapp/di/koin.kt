@@ -18,6 +18,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
@@ -64,6 +65,7 @@ val apiModule = module {
     factory(named(WEATHER)) {
         Retrofit.Builder()
             .client(get())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(get()))
             .baseUrl(API_URL)
             .build()

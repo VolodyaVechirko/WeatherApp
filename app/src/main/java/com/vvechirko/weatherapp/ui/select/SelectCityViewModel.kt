@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.vvechirko.core.data.Result
 import com.vvechirko.core.data.WeatherRepository
 import com.vvechirko.core.domain.CurrentWeather
 import com.vvechirko.core.domain.LocationPoint
 import com.vvechirko.weatherapp.R
 import com.vvechirko.weatherapp.ui.base.BaseViewModel
-import kotlinx.coroutines.launch
+import io.reactivex.Maybe
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class SelectCityViewModel(
     private val repository: WeatherRepository
@@ -44,32 +44,35 @@ class SelectCityViewModel(
     private var currentLocation: LocationPoint? = null
 
     fun refresh() {
-        _dataLoading.value = true
-        launch {
-            val point = currentLocation
-            // fetch city by current location
-            if (point != null) {
-                val result = repository.currentWeather(point)
-                if (result is Result.Success) {
-                    _currentCity.value = result.data
-                } else {
-                    showSnackbarMessage(R.string.loading_error)
-                }
-            }
+        val point = currentLocation
+        disposable.add(
+            Maybe.merge(
+                Maybe.defer {
+                    if (point != null) {
+                        // fetch city by current location
+                        repository.currentWeather(point)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnError { showSnackbarMessage(R.string.loading_error) }
+                            .doOnSuccess { _currentCity.value = it }
+                            .toMaybe()
+                    } else {
+                        Maybe.empty()
+                    }
+                },
 
-            val cities = repository.queryCities()
-            // fetch saved cities forecast
-            if (cities is Result.Success && cities.data.isNotEmpty()) {
-                val result = repository.currentWeather(cities.data)
-                if (result is Result.Success) {
-                    _savedCities.value = result.data.toMutableList()
-                } else {
-                    showSnackbarMessage(R.string.loading_error)
-                }
-            }
+                // fetch saved cities forecast
+                repository.queryCities()
+                    .filter { it.isNotEmpty() }
+                    .flatMapSingle { repository.currentWeather(it) }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError { showSnackbarMessage(R.string.loading_error) }
+                    .doOnSuccess { _savedCities.value = it.toMutableList() }
+                    .toMaybe()
 
-            _dataLoading.value = false
-        }
+            ).doOnSubscribe { _dataLoading.value = true }
+                .doOnComplete { _dataLoading.value = false }
+                .subscribe()
+        )
     }
 
     fun onLocationReceived(point: LocationPoint) {
@@ -78,17 +81,16 @@ class SelectCityViewModel(
     }
 
     fun addCity(name: String) {
-        _dataLoading.value = true
-        launch {
-            val result = repository.currentWeather(name)
-            if (result is Result.Success) {
+        disposable.add(repository.currentWeather(name)
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { _dataLoading.value = true }
+            .doOnTerminate { _dataLoading.value = false }
+            .doOnError { showSnackbarMessage(R.string.loading_error) }
+            .subscribe { it ->
                 val list = _savedCities.value?.toMutableList() ?: mutableListOf()
-                list.add(result.data)
+                list.add(it)
                 _savedCities.value = list
-            } else {
-                showSnackbarMessage(R.string.loading_error)
             }
-            _dataLoading.value = false
-        }
+        )
     }
 }

@@ -2,14 +2,13 @@ package com.vvechirko.weatherapp.ui.details
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.vvechirko.core.data.Result
 import com.vvechirko.core.data.WeatherRepository
 import com.vvechirko.core.domain.CityEntity
 import com.vvechirko.core.domain.ForecastEntity
-import com.vvechirko.weatherapp.ui.base.BaseViewModel
 import com.vvechirko.weatherapp.R
+import com.vvechirko.weatherapp.ui.base.BaseViewModel
 import com.vvechirko.weatherapp.ui.base.Event
-import kotlinx.coroutines.launch
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class CityDetailsViewModel(
     private val cityId: Int,
@@ -29,23 +28,24 @@ class CityDetailsViewModel(
     val cityDeleted: LiveData<Event<Boolean>> = _cityDeleted
 
     fun refresh() {
-        _dataLoading.value = true
-        launch {
-            val result = repository.weatherForecast(cityId)
-            if (result is Result.Success) {
-                _city.value = result.data.city
-                _forecasts.value = result.data.forecasts
-
-                if (result.data.forecasts.isNotEmpty()) {
-                    select(result.data.forecasts.first())
+        disposable.add(
+            repository.weatherForecast(cityId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { _dataLoading.value = true }
+                .doOnTerminate { _dataLoading.value = false }
+                .doOnError {
+                    _forecasts.value = emptyList()
+                    showSnackbarMessage(R.string.loading_error)
                 }
-            } else {
-                _forecasts.value = emptyList()
-                showSnackbarMessage(R.string.loading_error)
-            }
+                .subscribe { it ->
+                    _city.value = it.city
+                    _forecasts.value = it.forecasts
 
-            _dataLoading.value = false
-        }
+                    if (it.forecasts.isNotEmpty()) {
+                        select(it.forecasts.first())
+                    }
+                }
+        )
     }
 
     fun select(forecast: ForecastEntity) {
@@ -53,13 +53,10 @@ class CityDetailsViewModel(
     }
 
     fun delete() {
-        launch {
-            val result = repository.removeCity(cityId)
-            if (result is Result.Success) {
-                _cityDeleted.value = Event(true)
-            } else {
-                showSnackbarMessage(R.string.city_remove_error)
-            }
-        }
+        disposable.add(repository.removeCity(cityId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { showSnackbarMessage(R.string.city_remove_error) }
+            .subscribe { _cityDeleted.value = Event(true) }
+        )
     }
 }

@@ -1,7 +1,5 @@
 package com.vvechirko.core.data
 
-import kotlinx.coroutines.CoroutineScope
-
 /**
  * A generic class that holds a value with its loading status.
  * @param <T>
