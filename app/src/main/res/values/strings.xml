@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">WeatherApp</string>
+
+    <string name="loading_error">Error while loading forecast</string>
+    <string name="city_remove_error">Error while city removing</string>
+    <string name="delete">Delete</string>
+    <string name="add_new_city">Add new city</string>
+    <string name="done">Done</string>
+    <string name="enter_city">Enter city</string>
+</resources>

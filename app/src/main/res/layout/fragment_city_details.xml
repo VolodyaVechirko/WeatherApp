@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/refreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_marginTop="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/icon"
+            tools:text="Clear" />
+
+        <TextView
+            android:id="@+id/degree"
+            style="@style/TextAppearance.AppCompat.Display1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:singleLine="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/main"
+            tools:text="+18°C" />
+
+        <com.vvechirko.weatherapp.ui.widgets.ParamView
+            android:id="@+id/feelsLike"
+            android:layout_width="@dimen/param_width"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            app:hint="Feels like"
+            app:layout_constraintEnd_toStartOf="@+id/minTemp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/degree"
+            tools:value="+24°C" />
+
+        <com.vvechirko.weatherapp.ui.widgets.ParamView
+            android:id="@+id/minTemp"
+            android:layout_width="@dimen/param_width"
+            android:layout_height="wrap_content"
+            app:hint="Min temp"
+            app:layout_constraintEnd_toStartOf="@+id/maxTemp"
+            app:layout_constraintStart_toEndOf="@+id/feelsLike"
+            app:layout_constraintTop_toTopOf="@+id/feelsLike"
+            tools:value="+24°C" />
+
+        <com.vvechirko.weatherapp.ui.widgets.ParamView
+            android:id="@+id/maxTemp"
+            android:layout_width="@dimen/param_width"
+            android:layout_height="wrap_content"
+            app:hint="Max temp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/minTemp"
+            app:layout_constraintTop_toTopOf="@+id/feelsLike"
+            tools:value="+24°C" />
+
+        <com.vvechirko.weatherapp.ui.widgets.ParamView
+            android:id="@+id/wind"
+            android:layout_width="@dimen/param_width"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:hint="Wind"
+            app:layout_constraintEnd_toStartOf="@+id/humidity"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/feelsLike"
+            tools:value="2 m/s" />
+
+        <com.vvechirko.weatherapp.ui.widgets.ParamView
+            android:id="@+id/humidity"
+            android:layout_width="@dimen/param_width"
+            android:layout_height="wrap_content"
+            app:hint="Humidity"
+            app:layout_constraintEnd_toStartOf="@+id/pressure"
+            app:layout_constraintStart_toEndOf="@+id/wind"
+            app:layout_constraintTop_toTopOf="@+id/wind"
+            tools:value="80%" />
+
+        <com.vvechirko.weatherapp.ui.widgets.ParamView
+            android:id="@+id/pressure"
+            android:layout_width="@dimen/param_width"
+            android:layout_height="wrap_content"
+            app:hint="Pressure"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/humidity"
+            app:layout_constraintTop_toTopOf="@+id/wind"
+            tools:value="760" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/forecastList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:listitem="@layout/item_forecast" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
