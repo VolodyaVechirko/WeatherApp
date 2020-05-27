@@ -22,14 +22,17 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
 
     var items: List<T> = listOf()
         set(value) {
-            computeJob?.cancel()
-            computeJob = launch {
-                val result = withContext(Dispatchers.Default) {
-                    computeDiff(value, field, diffCallback)
-                }
+            // TODO: DiffUttils leads to Error Inconsistency detected. invalid view holder..
+//            computeJob?.cancel()
+//            computeJob = launch {
+//                val result = computeDiff(value, field, diffCallback)
+//                val result = withContext(Dispatchers.Default) {
+//                    computeDiff(value, field, diffCallback)
+//                }
                 field = value
-                result.dispatchUpdatesTo(this@BaseAdapter)
-            }
+                notifyDataSetChanged()
+//                result.dispatchUpdatesTo(this@BaseAdapter)
+//            }
         }
 
     override fun getItemCount(): Int = items.size
