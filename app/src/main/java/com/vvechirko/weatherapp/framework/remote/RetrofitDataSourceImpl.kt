@@ -5,7 +5,6 @@ import com.vvechirko.core.domain.CityEntity
 import com.vvechirko.core.domain.CurrentWeather
 import com.vvechirko.core.domain.WeatherForecast
 import com.vvechirko.core.domain.LocationPoint
-import com.vvechirko.weatherapp.framework.remote.mapper.map
 
 class RetrofitDataSourceImpl(
     private val weatherApi: WeatherApi
@@ -19,7 +18,7 @@ class RetrofitDataSourceImpl(
             "lon" to point.longitude.toString(),
             "appid" to apiKey
         )
-        return weatherApi.fetchCity(query).map()
+        return weatherApi.fetchCity(query).toEntity()
     }
 
     override suspend fun currentWeather(name: String): CurrentWeather {
@@ -27,7 +26,7 @@ class RetrofitDataSourceImpl(
             "q" to name,
             "appid" to apiKey
         )
-        return weatherApi.fetchCity(query).map()
+        return weatherApi.fetchCity(query).toEntity()
     }
 
     override suspend fun currentWeather(group: List<CityEntity>): List<CurrentWeather> {
@@ -39,7 +38,7 @@ class RetrofitDataSourceImpl(
             "appid" to apiKey
         )
         return weatherApi.fetchCities(query).list.map {
-            it.map()
+            it.toEntity()
         }
     }
 
@@ -48,6 +47,6 @@ class RetrofitDataSourceImpl(
             "id" to cityId.toString(),
             "appid" to apiKey
         )
-        return weatherApi.cityDetails(query).map()
+        return weatherApi.cityDetails(query).toEntity()
     }
 }
