@@ -4,10 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.api.load
 import com.vvechirko.core.domain.CityEntity
 import com.vvechirko.core.domain.CurrentWeather
 import com.vvechirko.weatherapp.R
-import com.vvechirko.weatherapp.util.load
 import kotlinx.android.synthetic.main.item_city.view.*
 
 class CitiesAdapter(

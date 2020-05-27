@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import coil.api.load
 import com.vvechirko.core.domain.ForecastEntity
 import com.vvechirko.core.util.toCelsius
 import com.vvechirko.core.util.toMmHg
@@ -15,7 +16,6 @@ import com.vvechirko.core.util.toSpeed
 import com.vvechirko.weatherapp.R
 import com.vvechirko.weatherapp.ui.base.BaseFragment
 import com.vvechirko.weatherapp.ui.base.EventObserver
-import com.vvechirko.weatherapp.util.load
 import kotlinx.android.synthetic.main.fragment_city_details.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
