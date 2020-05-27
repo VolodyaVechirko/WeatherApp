@@ -7,6 +7,7 @@ import coil.api.load
 import com.vvechirko.core.domain.CityEntity
 import com.vvechirko.core.domain.CurrentWeather
 import com.vvechirko.weatherapp.R
+import com.vvechirko.weatherapp.ui.base.BaseAdapter
 import com.vvechirko.weatherapp.util.inflate
 import kotlinx.android.synthetic.main.item_city.view.*
 
@@ -15,7 +16,7 @@ const val ITEM_HOLDER = 2
 
 class CitiesAdapter(
     private val itemClickListener: ItemClickListener
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : BaseAdapter<CurrentWeather, RecyclerView.ViewHolder>() {
 
     interface ItemClickListener {
         fun onItemClicked(item: CityEntity)
@@ -23,11 +24,13 @@ class CitiesAdapter(
 
     var displayHeader: Boolean = false
 
-    var items: List<CurrentWeather> = listOf()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    override fun compareItems(oldItem: CurrentWeather, newItem: CurrentWeather): Boolean {
+        return oldItem.city.id == newItem.city.id
+    }
+
+    override fun compareContents(oldItem: CurrentWeather, newItem: CurrentWeather): Boolean {
+        return oldItem == newItem
+    }
 
     override fun getItemViewType(position: Int): Int {
         return if (displayHeader && position == 0) HEADER_HOLDER else ITEM_HOLDER
@@ -37,8 +40,6 @@ class CitiesAdapter(
         return if (viewType == HEADER_HOLDER) Header(parent.inflate(R.layout.item_header))
         else Item(parent.inflate(R.layout.item_city))
     }
-
-    override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
