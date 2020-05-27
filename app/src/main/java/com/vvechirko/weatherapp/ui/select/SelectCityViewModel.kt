@@ -37,9 +37,8 @@ class SelectCityViewModel(
     }
 
     val citiesList: LiveData<List<CurrentWeather>> = _citiesList
-    val empty: LiveData<Boolean> = Transformations.map(_citiesList) {
-        it.isEmpty()
-    }
+    val hasCurrentLocation: LiveData<Boolean> = Transformations.map(_currentCity) { it != null }
+    val citiesEmpty: LiveData<Boolean> = Transformations.map(_citiesList) { it.isEmpty() }
 
     private var currentLocation: LocationPoint? = null
 

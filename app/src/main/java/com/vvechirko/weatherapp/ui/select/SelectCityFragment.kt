@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import com.vvechirko.core.domain.CityEntity
 import com.vvechirko.core.domain.LocationPoint
 import com.vvechirko.weatherapp.R
@@ -23,16 +24,29 @@ class SelectCityFragment : BaseFragment(), LocationManager.Callback,
     private val locationManager = LocationManager()
     private val adapter = CitiesAdapter(this)
 
+    private val gridSpanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+        override fun getSpanSize(position: Int): Int {
+            return if (adapter.getItemViewType(position) == HEADER_HOLDER) 3 else 1
+        }
+    }
+
     override val layoutResId: Int
         get() = R.layout.fragment_select_city
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        citiesList.layoutManager = GridLayoutManager(context!!, 3).apply {
+            spanSizeLookup = gridSpanSizeLookup
+        }
         citiesList.adapter = adapter
         refreshLayout.setOnRefreshListener(viewModel::refresh)
         fabAdd.setOnClickListener(::showAddCityDialog)
 
         viewModel.citiesList.observe(this, Observer {
             adapter.items = it
+        })
+
+        viewModel.hasCurrentLocation.observe(this, Observer {
+            adapter.displayHeader = it
         })
 
         viewModel.dataLoading.observe(this, Observer {
