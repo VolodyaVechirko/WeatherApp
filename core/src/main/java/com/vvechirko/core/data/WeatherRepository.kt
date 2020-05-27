@@ -1,5 +1,6 @@
 package com.vvechirko.core.data
 
+import androidx.lifecycle.LiveData
 import com.vvechirko.core.domain.CityEntity
 import com.vvechirko.core.domain.CurrentWeather
 import com.vvechirko.core.domain.LocationPoint
@@ -12,4 +13,6 @@ interface WeatherRepository {
     suspend fun currentWeather(group: List<CityEntity>): Result<List<CurrentWeather>>
     suspend fun weatherForecast(cityId: Int): Result<WeatherForecast>
     suspend fun removeCity(cityId: Int): Result<Unit>
+
+    fun citiesLiveData(): LiveData<List<CurrentWeather>>
 }

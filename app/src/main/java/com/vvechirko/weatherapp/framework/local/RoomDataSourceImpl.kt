@@ -1,5 +1,6 @@
 package com.vvechirko.weatherapp.framework.local
 
+import androidx.lifecycle.Transformations
 import com.vvechirko.core.data.LocalDataSource
 import com.vvechirko.core.domain.CityEntity
 import com.vvechirko.core.domain.CurrentWeather
@@ -38,5 +39,15 @@ class RoomDataSourceImpl(
 
     override suspend fun removeCity(cityId: Int) {
         dao.deleteById(cityId)
+    }
+
+    override fun citiesData() = Transformations.map(dao.citiesData()) { data ->
+        data.map { it.toEntity() }
+    }
+
+    override fun weatherData(group: List<CityEntity>) = Transformations.map(dao.forecastsData()) { data ->
+        data.map {
+            CurrentWeather(it.cityEntity.toEntity(), it.forecastEntity.toEntity())
+        }
     }
 }

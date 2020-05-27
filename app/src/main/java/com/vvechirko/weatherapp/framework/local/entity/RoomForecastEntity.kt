@@ -2,6 +2,7 @@ package com.vvechirko.weatherapp.framework.local.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 import com.vvechirko.core.domain.ForecastEntity
 import java.util.*
 
@@ -11,10 +12,10 @@ import java.util.*
         parentColumns = ["id"],
         childColumns = ["cityId"],
         onDelete = ForeignKey.CASCADE
-    )], primaryKeys = ["cityId", "date"]
+    )]
 )
 data class RoomForecastEntity(
-    val cityId: Int,
+    @PrimaryKey val cityId: Int,
     val date: Date,
     val main: String,
     val description: String,

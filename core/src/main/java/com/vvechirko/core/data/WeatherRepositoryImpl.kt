@@ -1,5 +1,6 @@
 package com.vvechirko.core.data
 
+import androidx.lifecycle.Transformations
 import com.vvechirko.core.domain.CityEntity
 import com.vvechirko.core.domain.LocationPoint
 import com.vvechirko.core.util.NetworkAvailability
@@ -86,5 +87,9 @@ class WeatherRepositoryImpl(
         } catch (e: Exception) {
             Result.Error(e)
         }
+    }
+
+    override fun citiesLiveData() = Transformations.switchMap(localDataSource.citiesData()) {
+        localDataSource.weatherData(it)
     }
 }

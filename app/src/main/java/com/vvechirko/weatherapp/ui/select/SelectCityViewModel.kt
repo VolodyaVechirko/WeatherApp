@@ -1,7 +1,6 @@
 package com.vvechirko.weatherapp.ui.select
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.vvechirko.core.data.Result
@@ -10,6 +9,7 @@ import com.vvechirko.core.domain.CurrentWeather
 import com.vvechirko.core.domain.LocationPoint
 import com.vvechirko.weatherapp.R
 import com.vvechirko.weatherapp.ui.base.BaseViewModel
+import com.vvechirko.weatherapp.util.CombinedLiveData
 import kotlinx.coroutines.launch
 
 class SelectCityViewModel(
@@ -17,28 +17,18 @@ class SelectCityViewModel(
 ) : BaseViewModel() {
 
     private val _currentCity = MutableLiveData<CurrentWeather>()
-    private val _savedCities = MutableLiveData<List<CurrentWeather>>()
+    private val savedCities = repository.citiesLiveData()
 
-    // merge current city data and added cities
-    private val _citiesList = MediatorLiveData<List<CurrentWeather>>().apply {
-        addSource(_currentCity) { city ->
-            val list = _savedCities.value?.toMutableList() ?: mutableListOf()
-            list.add(0, city)
-            value = list
+    // merge current city data and user added cities
+    val citiesList: LiveData<List<CurrentWeather>> = CombinedLiveData(_currentCity, savedCities) { data1, data2 ->
+        val result = data2?.toMutableList() ?: mutableListOf()
+        if (data1 != null) {
+            result.add(0, data1)
         }
-
-        addSource(_savedCities) { cities ->
-            val list = cities.toMutableList()
-            _currentCity.value?.let {
-                list.add(0, it)
-            }
-            value = list
-        }
+        result
     }
-
-    val citiesList: LiveData<List<CurrentWeather>> = _citiesList
     val hasCurrentLocation: LiveData<Boolean> = Transformations.map(_currentCity) { it != null }
-    val citiesEmpty: LiveData<Boolean> = Transformations.map(_citiesList) { it.isEmpty() }
+    val citiesEmpty: LiveData<Boolean> = Transformations.map(citiesList) { it.isEmpty() }
 
     private var currentLocation: LocationPoint? = null
 
@@ -61,7 +51,7 @@ class SelectCityViewModel(
             if (cities is Result.Success && cities.data.isNotEmpty()) {
                 val result = repository.currentWeather(cities.data)
                 if (result is Result.Success) {
-                    _savedCities.value = result.data.toMutableList()
+                    // data will be observed
                 } else {
                     showSnackbarMessage(R.string.loading_error)
                 }
@@ -81,9 +71,7 @@ class SelectCityViewModel(
         launch {
             val result = repository.currentWeather(name)
             if (result is Result.Success) {
-                val list = _savedCities.value?.toMutableList() ?: mutableListOf()
-                list.add(result.data)
-                _savedCities.value = list
+                // data will be observed
             } else {
                 showSnackbarMessage(R.string.loading_error)
             }

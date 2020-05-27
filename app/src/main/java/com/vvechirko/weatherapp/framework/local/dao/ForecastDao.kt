@@ -1,5 +1,6 @@
 package com.vvechirko.weatherapp.framework.local.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.vvechirko.weatherapp.framework.local.entity.CityForecast
 import com.vvechirko.weatherapp.framework.local.entity.RoomCityEntity
@@ -40,4 +41,12 @@ interface ForecastDao {
     @Transaction
     @Query("SELECT * FROM Cities")
     suspend fun queryForecasts(): List<CityForecast>
+
+
+    @Query("SELECT * FROM Cities")
+    fun citiesData(): LiveData<List<RoomCityEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM Cities")
+    fun forecastsData(): LiveData<List<CityForecast>>
 }
