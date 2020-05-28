@@ -7,9 +7,6 @@ fun <T> computeDiff(
     newList: List<T>,
     diffCallback: DiffUtil.ItemCallback<T>
 ): DiffUtil.DiffResult {
-    val oldSize = oldList.size
-    val newSize = newList.size
-
     return DiffUtil.calculateDiff(object : DiffUtil.Callback() {
         override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
             val oldItem = oldList[oldItemPosition]
@@ -17,9 +14,9 @@ fun <T> computeDiff(
             return diffCallback.getChangePayload(oldItem, newItem)
         }
 
-        override fun getOldListSize() = oldSize
+        override fun getOldListSize() = oldList.size
 
-        override fun getNewListSize() = newSize
+        override fun getNewListSize() = newList.size
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
