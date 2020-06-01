@@ -18,8 +18,5 @@ Presentation layer is built (MVVM with one way databinding) using ViewModel (arc
 Koin is used as a dependency injection tool.
 
 What are not included:
-Unit tests,
 Android data binding (xml),
-Android navigation (arch comp),
-DiffUtils for RecyclerView,
-Room data observing (with LiveData).
+Android navigation (arch comp)
