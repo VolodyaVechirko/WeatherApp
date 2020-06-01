@@ -48,7 +48,7 @@ class SelectCityViewModel(
 
             val cities = repository.queryCities()
             // fetch saved cities forecast
-            if (cities is Result.Success && cities.data.isNotEmpty()) {
+            if (cities is Result.Success) {
                 val result = repository.currentWeather(cities.data)
                 if (result is Result.Success) {
                     // data will be observed
